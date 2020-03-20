@@ -51,6 +51,8 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="23dp"
                 android:layout_marginBottom="5dp"
+                android:textColor="@android:color/white"
+                android:background="@drawable/buttonnripple"
                 android:text="@string/showPairedDevice" />
 
             <ListView
