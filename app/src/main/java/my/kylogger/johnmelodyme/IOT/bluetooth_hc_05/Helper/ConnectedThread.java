@@ -45,7 +45,6 @@ public class ConnectedThread extends Thread{
             in = socket.getInputStream();
             out = socket.getOutputStream();
         } catch (IOException e) {
-            e.printStackTrace();
             Log.d(TAG, "ConnectedThread: " + e);
         }
         inputStream = in;
@@ -68,7 +67,6 @@ public class ConnectedThread extends Thread{
                             .sendToTarget();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
                 Log.e(TAG, "buffer:", e);
                 break;
             }
@@ -81,7 +79,6 @@ public class ConnectedThread extends Thread{
         try {
             outputStream.write(bytes);
         } catch (Exception e) {
-            e.printStackTrace();
             Log.e(TAG, "Write: ", e);
         }
     }

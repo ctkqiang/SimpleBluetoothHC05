@@ -23,24 +23,41 @@
                 android:id="@+id/RX"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="23dp"
+                android:layout_marginBottom="5dp"
+                android:text="TextView"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/Status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="23dp"
+                android:layout_marginBottom="5dp"
+                android:text="TextView"
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/ShowPairedDevice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="23dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/showPairedDevice" />
 
             <ListView
                 android:id="@+id/lv_devices"
                 android:layout_width="match_parent"
-                android:layout_height="300dp" />
+                android:layout_height="410dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="23dp" />
 
         </LinearLayout>
     </ScrollView>

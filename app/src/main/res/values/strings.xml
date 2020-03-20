@@ -1,4 +1,12 @@
-<resources>
-    <string name="app_name">Bluetooth HC-05</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Simple Bluetooth HC-05</string>
     <string name="bluetoothonoff">Enable/Disable Bluetooth</string>
+    <string name="EnablingBluetooth" tools:ignore="TypographyEllipsis">Enabling Bluetooth...</string>
+    <string name="showPairedDevice">Show Paired Device</string>
+    <string name="pleaseena">Mind To Enable Bluetooth ? 💀</string>
+    <string name="alreadyOn">Bluetooth Already Enabled 😄</string>
+    <string name="about">About Developer</string>
+    <string name="aboutdev">This Application is Developed by ✍ John Melody Melissa ✍ and Support of ❤Cindy Tan❤</string>
+    <string name="notSupported">Bluetooth is not supported in this device</string>
+    <string name="BLUETOOTH_UUID" tools:ignore="TypographyDashes">00001101-0000-1000-8000-00805F9B34FB</string>
 </resources>
