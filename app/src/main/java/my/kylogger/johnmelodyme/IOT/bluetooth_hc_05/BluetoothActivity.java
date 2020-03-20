@@ -20,31 +20,33 @@ package my.kylogger.johnmelodyme.IOT.bluetooth_hc_05;
  * @Class: BluetoothActivity.class
  *
  */
-import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.ligl.android.widget.iosdialog.IOSDialog;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.UUID;
-
 import es.dmoral.toasty.Toasty;
 
 public class BluetoothActivity extends AppCompatActivity {
@@ -90,21 +92,93 @@ public class BluetoothActivity extends AppCompatActivity {
     public void CheckBluetoothInit() {
         if (!(bluetoothAdapter == null)){
             if (bluetoothAdapter.isEnabled()){
-//                    progressDialog.show();
-//                    bluetoothAdapter.enable();
-//                    findViewById(R.id.bluetoothonoff).setBackgroundResource(R.drawable.ic_bluetooth_connected_black_24dp);
-//                    progressDialog.dismiss();
                 Toasty.success(getApplicationContext(),
                         getResources().getString(R.string.alreadyOn),
                         TOAST_DURATION, true)
                         .show();
                 Log.d(TAG, "$user " + getResources().getString(R.string.alreadyOn));
+                InitMenu();
             } else {
                 Toasty.error(getApplicationContext(),
                         getResources().getString(R.string.pleaseena),
                         TOAST_DURATION)
                         .show();
                 Log.d(TAG, "$user needs to " + getResources().getString(R.string.pleaseena));
+                Intent enableBtIntent;
+                enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+
+            }
+        } else {
+            Toasty.error(getApplicationContext(),
+                    getResources().getString(R.string.notSupported),
+                    TOAST_DURATION)
+                    .show();
+            Log.e(TAG, "$user device " + getResources().getString(R.string.notSupported));
+        }
+    }
+
+    // TODO InitMenu()
+    public void InitMenu() {
+        // TODO ShowPairedDevice.setOnClickListener()
+        ShowPairedDevice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bluetoothAdapter.isDiscovering()) {
+                    bluetoothAdapter.cancelDiscovery();
+                } else {
+                    if (bluetoothAdapter.isEnabled()){
+                        btAdapter.clear();
+                        bluetoothAdapter.startDiscovery();
+                        registerReceiver(BR, new IntentFilter(BluetoothDevice.ACTION_FOUND));
+                    } else {
+                        System.out.println(getResources().getString(R.string.pleaseena));
+                    }
+                }
+            }
+        });
+
+        // TODO listViewPairedDevices.setOnItemClickListener()
+        listViewPairedDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //
+            }
+        });
+    }
+
+    // TODO BroadCastReceiver()
+    final BroadcastReceiver BR = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String ACTION;
+            ACTION = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(ACTION)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_NAME);
+                btAdapter.add(device.getName() + "\n" + device.getAddress());
+                btAdapter.notifyDataSetChanged();
+            }
+        }
+    };
+
+    // TODO handleMessage()
+    @SuppressLint("SetTextI18n")
+    public void handleMessage(android.os.Message msg){
+        if (msg.what == MESSAGE_READ){
+            String ReadMessage = null;
+            try {
+                ReadMessage = new String((byte[]) msg.obj, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG, "handleMessage: ", e);
+            }
+            RX.setText("RX" + ReadMessage);
+        }
+
+        if (msg.what == CONNECTING_STATUS){
+            if (msg.arg1 == 1){
+                Status.setText("Bluetooth Status: " + "Connected To" + (String) (msg.obj) );
+            } else {
+                Status.setText("Connection Failed \uD83D\uDE41 ");
             }
         }
     }
@@ -119,7 +193,6 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     // TODO onOptionsItemSelected()
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-
         if (menuItem.getItemId() == R.id.about) {
             new IOSDialog.Builder(BluetoothActivity.this)
                     .setTitle("About")
