@@ -15,4 +15,5 @@
     <string name="connectedto">Connected To:</string>
     <string name="Arduino">Arduino Code</string>
     <string name="ConnectionFailed">Connection Failed.</string>
+    <string name="errReading">Error Reading File!</string>
 </resources>

@@ -19,7 +19,6 @@
  * @INPIREDBYGF: Cindy Tan <3
  * @Class: Bluetooth.ino
  */
-
 SoftwareSerial bluetooth (2, 4);
 
 unsigned long previousMillis = 0;
@@ -27,17 +26,17 @@ const long interval = 500;
 static uint32_t tmp;
 
 void setup() {
-    pinMode(13, OUTPUT);
-    bluetooth.begin(9600);
-    delay(200);
-    bluetooth.print("AT+NAME https://johnmelodyme.github.io/");
-    delay(3000);
+  pinMode(13, OUTPUT);
+  bluetooth.begin(9600);
+  delay(200);
+  bluetooth.print("AT+NAME https://johnmelodyme.github.io/");
+  delay(3000);
 }
 
 void loop() {
-    if (bluetooth.available()){
-        if (bluetooth.read() == '1') {
-        digitalWrite(13, !digitalRead(13));
-        }
+  if (bluetooth.available()){
+    if (bluetooth.read() == '1') {
+      digitalWrite(13, !digitalRead(13));
     }
+  }
 }

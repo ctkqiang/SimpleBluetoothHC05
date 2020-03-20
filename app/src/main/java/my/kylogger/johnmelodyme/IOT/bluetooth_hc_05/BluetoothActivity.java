@@ -263,7 +263,16 @@ public class BluetoothActivity extends AppCompatActivity {
                     .setMessage(getResources().getString(R.string.aboutdev))
                     .setPositiveButton("Ok", null)
                     .show();
+            return false;
         }
+
+        if (menuItem.getItemId() == R.id.arduinocode){
+            Intent ToArduino;
+            ToArduino = new Intent(BluetoothActivity.this, ArduinoActivity.class);
+            startActivity(ToArduino);
+            return false;
+        }
+
         return super.onOptionsItemSelected(menuItem);
     }
 
