@@ -21,7 +21,11 @@ package my.kylogger.johnmelodyme.IOT.bluetooth_hc_05;
  *
  */
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,16 +37,17 @@ import es.dmoral.toasty.Toasty;
 
 import static my.kylogger.johnmelodyme.IOT.bluetooth_hc_05.BluetoothActivity.TOAST_DURATION;
 
-public class ArduinoActivity extends AppCompatActivity {
+public class ArduinoActivity extends AppCompatActivity implements View.OnTouchListener {
     public static final String TAG = "Bluetooth";
     private StringBuilder text = new StringBuilder();
-    private  TextView arduino;
+    private TextView arduino;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arduino);
         arduino = findViewById(R.id.arduino);
+        arduino.setOnTouchListener(this);
         BufferedReader reader = null;
 
         try {
@@ -69,5 +74,12 @@ public class ArduinoActivity extends AppCompatActivity {
             }
         }
         arduino.setText((CharSequence) text);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    // TODO onTouch();
+    public boolean onTouch(View v, MotionEvent event) {
+        return false;
     }
 }
