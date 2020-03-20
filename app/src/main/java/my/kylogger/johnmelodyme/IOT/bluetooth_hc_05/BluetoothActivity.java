@@ -218,6 +218,7 @@ public class BluetoothActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     @Override
+    // TODO onStart
     public void onStart(){
         super.onStart();
         Status.setText("<Bluetooth Status>");
