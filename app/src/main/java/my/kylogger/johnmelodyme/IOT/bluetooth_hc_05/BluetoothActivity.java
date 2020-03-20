@@ -25,6 +25,7 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,13 +42,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.ligl.android.widget.iosdialog.IOSDialog;
-
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.UUID;
 import es.dmoral.toasty.Toasty;
+import my.kylogger.johnmelodyme.IOT.bluetooth_hc_05.Helper.ConnectedThread;
 
 public class BluetoothActivity extends AppCompatActivity {
     public static final String TAG = "Bluetooth";
@@ -57,13 +60,16 @@ public class BluetoothActivity extends AppCompatActivity {
     public final static int CONNECTING_STATUS = 0x3;
     public final static int TOAST_DURATION = Toast.LENGTH_SHORT;
     public static BluetoothAdapter bluetoothAdapter;
+    public static BluetoothSocket bluetoothSocket = null;
     public static Set<BluetoothDevice> pairedDevices;
     public static Handler staticHandler;
+    public ConnectedThread connectedThread;
     private ArrayAdapter<String> btAdapter;
     private TextView RX, Status;
     private Button ShowPairedDevice;
     private ListView listViewPairedDevices;
     private ProgressDialog progressDialog;
+    private Handler handler;
 
     // TODO DeclarationInit()
     public void DeclarationInit(){
@@ -75,9 +81,11 @@ public class BluetoothActivity extends AppCompatActivity {
         btAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         listViewPairedDevices = findViewById(R.id.lv_devices);
         listViewPairedDevices.setAdapter(btAdapter);
+        listViewPairedDevices.setOnItemClickListener(listViewPairedDevicesClickListener);
         progressDialog.setMessage(getResources().getString(R.string.EnablingBluetooth));
     }
 
+    @SuppressLint("HandlerLeak")
     @Override
     // TODO onCreate()
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +94,31 @@ public class BluetoothActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: " + BluetoothActivity.class.getSimpleName());
         DeclarationInit();
         CheckBluetoothInit();
+
+        // TODO handler();
+        handler = new Handler(){
+            @SuppressLint({"HandlerLeak", "SetTextI18n"})
+            @Override
+            public void handleMessage(android.os.Message msg) {
+                if(msg.what  == MESSAGE_READ) {
+                    String ReadMessage = null;
+                    try {
+                        ReadMessage = new String((byte []) msg.obj, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        Log.e(TAG, "Handler", e);
+                    }
+                    RX.setText(ReadMessage);
+                }
+
+                if (msg.what == CONNECTING_STATUS) {
+                    if (msg.arg1 == 1) {
+                        Status.setText(getResources().getString(R.string.connectedto) +" "+(String) (msg.obj));
+                    } else {
+                        Status.setText(getResources().getString(R.string.ConnectionFailed));
+                    }
+                }
+            }
+        };
     }
 
     // TODO CheckBluetoothInit()
@@ -142,7 +175,22 @@ public class BluetoothActivity extends AppCompatActivity {
         listViewPairedDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //
+                pairedDevices = bluetoothAdapter.getBondedDevices();
+                if (bluetoothAdapter.isEnabled()) {
+                    for (BluetoothDevice device : pairedDevices){
+                        btAdapter.add(device.getName() + "\n" + device.getAddress());
+                    }
+                    Toasty.normal(getApplicationContext(),
+                            getResources().getString(R.string.showPairedDevice),
+                            R.mipmap.app)
+                            .show();
+                } else {
+                    Toasty.error(getApplicationContext(),
+                            getResources().getString(R.string.pleaseena),
+                            TOAST_DURATION)
+                            .show();
+                    Log.d(TAG, "$user needs to " + getResources().getString(R.string.pleaseena));
+                }
             }
         });
     }
@@ -166,6 +214,14 @@ public class BluetoothActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(BR);
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onStart(){
+        super.onStart();
+        Status.setText("<Bluetooth Status>");
+        RX.setText("<Read Buffer>");
     }
 
     // TODO handleMessage()
@@ -208,5 +264,66 @@ public class BluetoothActivity extends AppCompatActivity {
                     .show();
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    // TODO listViewPairedDevicesClickListener()
+    private AdapterView.OnItemClickListener listViewPairedDevicesClickListener = new AdapterView.OnItemClickListener() {
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (!(bluetoothAdapter.isEnabled())) {
+                Toasty.error(getApplicationContext(),
+                        getResources().getString(R.string.pleaseena),
+                        TOAST_DURATION)
+                        .show();
+                Log.d(TAG, "$user needs to " + getResources().getString(R.string.pleaseena));
+            }
+            String information;
+            final String Address, Name;
+            information = ((TextView) view).getText().toString();
+            Address = information.substring(information.length() - 17);
+            Name = information.substring(0, information.length() - 17);
+            Status.setText(getResources().getString(R.string.connect));
+
+            new Thread() {
+              public void run(){
+                  boolean fail = false;
+                  BluetoothDevice device;
+                  device = bluetoothAdapter.getRemoteDevice(Address);
+                  try {
+                      bluetoothSocket = createBluetoothSocket(device);
+                  } catch (Exception e) {
+                      fail = true;
+                      Toasty.error(getApplicationContext(),
+                              getResources().getString(R.string.failedSocket),
+                              TOAST_DURATION, true)
+                              .show();
+                      Log.e(TAG, getResources().getString(R.string.failedSocket) + e);
+                  }
+                  try {
+                      bluetoothSocket.connect();
+                  } catch (Exception e) {
+                      try {
+                          fail = true;
+                          bluetoothSocket.close();
+                          handler.obtainMessage(CONNECTING_STATUS, -1, -1).sendToTarget();
+                      } catch (Exception ex) {
+                          Log.e(TAG, "run: " + e );
+                      }
+                  }
+
+                  if (!fail) {
+                      connectedThread = new ConnectedThread(bluetoothSocket);
+                      connectedThread.start();
+                      handler.obtainMessage(CONNECTING_STATUS, -1, -1, Name).sendToTarget();
+                  }
+              }
+            }.start();
+        }
+    };
+
+    // TODO createBluetoothSocket
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+        return device.createRfcommSocketToServiceRecord(BLUETOOTH_MODULE_UUID);
     }
 }

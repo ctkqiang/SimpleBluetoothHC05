@@ -6,7 +6,12 @@
     <string name="pleaseena">Mind To Enable Bluetooth ? 💀</string>
     <string name="alreadyOn">Bluetooth Already Enabled 😄</string>
     <string name="about">About Developer</string>
+    <string name="showpaireddevice">Showing Paired device</string>
     <string name="aboutdev">This Application is Developed by ✍ John Melody Melissa ✍ and Support of ❤Cindy Tan❤</string>
     <string name="notSupported">Bluetooth is not supported in this device</string>
     <string name="BLUETOOTH_UUID" tools:ignore="TypographyDashes">00001101-0000-1000-8000-00805F9B34FB</string>
+    <string name="connect" tools:ignore="TypographyEllipsis">Connecting...</string>
+    <string name="failedSocket">Failed To Create Socket.</string>
+    <string name="connectedto">Connected To:</string>
+    <string name="ConnectionFailed">Connection Failed.</string>
 </resources>

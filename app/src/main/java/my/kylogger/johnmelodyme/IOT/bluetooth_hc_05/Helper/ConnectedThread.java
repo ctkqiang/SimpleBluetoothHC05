@@ -82,4 +82,13 @@ public class ConnectedThread extends Thread{
             Log.e(TAG, "Write: ", e);
         }
     }
+
+    // TODO Cancel();
+    public void Cancel() {
+        try {
+            bluetoothSocket.close();
+        } catch (IOException e) {
+            Log.e(TAG, ConnectedThread.TAG, e );
+        }
+    }
 }
