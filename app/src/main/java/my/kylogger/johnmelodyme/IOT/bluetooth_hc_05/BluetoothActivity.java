@@ -22,21 +22,43 @@ package my.kylogger.johnmelodyme.IOT.bluetooth_hc_05;
  */
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 
 public class BluetoothActivity extends AppCompatActivity {
     public static final String TAG = "Bluetooth";
+    public final static int REQUEST_ENABLE_BLUETOOTH = 0x1;
+    public final static int MESSAGE_READ = 0x2;
+    public final static int CONNECTING_STATUS = 0x3;
+    public static BluetoothAdapter bluetoothAdapter;
+    public static Handler staticHandler;
+    private TextView RX, Status;
+    private Button ShowPairedDevice;
+    private ListView listViewPairedDevices;
 
+    // TODO DeclarationInit()
+    public void DeclarationInit(){
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        RX = findViewById(R.id.RX);
+        Status = findViewById(R.id.Status);
+        ShowPairedDevice = findViewById(R.id.ShowPairedDevice);
+        listViewPairedDevices = findViewById(R.id.lv_devices);
+    }
 
     @Override
+    // TODO onCreate()
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate: " + BluetoothActivity.class.getSimpleName());
-
+        DeclarationInit();
     }
 
     @Override
@@ -50,7 +72,9 @@ public class BluetoothActivity extends AppCompatActivity {
     // TODO onOptionsItemSelected()
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.bluetoothonoff) {
-
+            if (!(bluetoothAdapter == null)){
+                //findViewById(R.id.bluetoothonoff).setBackgroundResource(R.drawable.ic_bluetooth_connected_black_24dp);
+            }
         }
         return super.onOptionsItemSelected(menuItem);
     }
