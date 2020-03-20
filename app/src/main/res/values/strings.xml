@@ -13,5 +13,6 @@
     <string name="connect" tools:ignore="TypographyEllipsis">Connecting...</string>
     <string name="failedSocket">Failed To Create Socket.</string>
     <string name="connectedto">Connected To:</string>
+    <string name="Arduino">Arduino Code</string>
     <string name="ConnectionFailed">Connection Failed.</string>
 </resources>
