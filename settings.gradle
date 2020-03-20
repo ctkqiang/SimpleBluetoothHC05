@@ -1,0 +1,2 @@
+rootProject.name='Bluetooth HC-05'
+include ':app'
