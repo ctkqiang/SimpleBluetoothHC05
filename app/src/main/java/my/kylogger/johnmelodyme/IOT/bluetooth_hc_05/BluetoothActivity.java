@@ -161,6 +161,13 @@ public class BluetoothActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    // TODO onDestroy
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(BR);
+    }
+
     // TODO handleMessage()
     @SuppressLint("SetTextI18n")
     public void handleMessage(android.os.Message msg){
