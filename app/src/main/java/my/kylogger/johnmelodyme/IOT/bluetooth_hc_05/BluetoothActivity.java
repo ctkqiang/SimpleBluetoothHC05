@@ -20,7 +20,6 @@ package my.kylogger.johnmelodyme.IOT.bluetooth_hc_05;
  * @Class: BluetoothActivity.class
  *
  */
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -42,7 +41,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.ligl.android.widget.iosdialog.IOSDialog;
 import java.io.IOException;
@@ -140,7 +138,6 @@ public class BluetoothActivity extends AppCompatActivity {
                 Intent enableBtIntent;
                 enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
-
             }
         } else {
             Toasty.error(getApplicationContext(),
@@ -168,6 +165,16 @@ public class BluetoothActivity extends AppCompatActivity {
                         System.out.println(getResources().getString(R.string.pleaseena));
                     }
                 }
+
+                Set<BluetoothDevice>pairedDevice = bluetoothAdapter.getBondedDevices();
+                if (pairedDevice.size() > 0) {
+                    for (BluetoothDevice device : pairedDevice) {
+                        String deviceName = device.getName();
+                        String deviceHardwareAddress = device.getAddress(); // MAC address
+                        btAdapter.add(deviceName + "\n" + deviceHardwareAddress);
+                    }
+                    listViewPairedDevices.setAdapter(btAdapter);
+                }
             }
         });
 
@@ -175,22 +182,7 @@ public class BluetoothActivity extends AppCompatActivity {
         listViewPairedDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                pairedDevices = bluetoothAdapter.getBondedDevices();
-                if (bluetoothAdapter.isEnabled()) {
-                    for (BluetoothDevice device : pairedDevices){
-                        btAdapter.add(device.getName() + "\n" + device.getAddress());
-                    }
-                    Toasty.normal(getApplicationContext(),
-                            getResources().getString(R.string.showPairedDevice),
-                            R.mipmap.app)
-                            .show();
-                } else {
-                    Toasty.error(getApplicationContext(),
-                            getResources().getString(R.string.pleaseena),
-                            TOAST_DURATION)
-                            .show();
-                    Log.d(TAG, "$user needs to " + getResources().getString(R.string.pleaseena));
-                }
+
             }
         });
     }
@@ -248,14 +240,12 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
     @Override
-    // TODO  onCreateOptionsMenu()
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    // TODO onOptionsItemSelected()
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.about) {
             new IOSDialog.Builder(BluetoothActivity.this)

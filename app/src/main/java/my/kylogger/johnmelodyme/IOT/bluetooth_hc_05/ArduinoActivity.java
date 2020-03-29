@@ -42,6 +42,7 @@ public class ArduinoActivity extends AppCompatActivity implements View.OnTouchLi
     private StringBuilder text = new StringBuilder();
     private TextView arduino;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
